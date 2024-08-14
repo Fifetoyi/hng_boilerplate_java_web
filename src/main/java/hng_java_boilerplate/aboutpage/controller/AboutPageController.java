@@ -31,14 +31,10 @@ public class AboutPageController {
     }
 
     @GetMapping("/about")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAboutPageContent() {
         try {
             AboutPageContentDto contentDto = aboutPageService.getAboutPageContent();
             return ResponseEntity.ok(new ApiResponse("Retrieved About Page content successfully", 200));
-        } catch (AccessDeniedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new ApiResponse("You do not have the necessary permissions to access this resource", 403));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
