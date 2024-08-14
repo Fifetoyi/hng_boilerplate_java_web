@@ -4,9 +4,11 @@ import hng_java_boilerplate.aboutpage.dto.AboutPageContentDto;
 import hng_java_boilerplate.aboutpage.entity.AboutPageContent;
 import hng_java_boilerplate.aboutpage.repository.AboutPageRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -38,5 +40,33 @@ public class AboutPageService {
         }
 
         aboutPageRepository.save(content);
+    }
+
+    @Transactional(readOnly = true)
+    public AboutPageContentDto getAboutPageContent() throws AccessDeniedException {
+        AboutPageContent content = aboutPageRepository.findById(1L).orElseThrow(() -> new AccessDeniedException("Access denied"));
+
+        AboutPageContentDto contentDto = new AboutPageContentDto();
+        contentDto.setTitle(content.getTitle());
+        contentDto.setIntroduction(content.getIntroduction());
+
+        Map<String, Object> customSections = new HashMap<>();
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("years_in_business", content.getYearsInBusiness());
+        stats.put("customers", content.getCustomers());
+        stats.put("monthly_blog_readers", content.getMonthlyBlogReaders());
+        stats.put("social_followers", content.getSocialFollowers());
+
+        customSections.put("stats", stats);
+
+        Map<String, Object> services = new HashMap<>();
+        services.put("title", content.getServicesTitle());
+        services.put("description", content.getServicesDescription());
+
+        customSections.put("services", services);
+
+        contentDto.setCustomSections(customSections);
+
+        return contentDto;
     }
 }

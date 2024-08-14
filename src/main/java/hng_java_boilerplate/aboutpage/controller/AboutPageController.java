@@ -7,11 +7,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/content")
@@ -29,6 +27,22 @@ public class AboutPageController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse("Failed to update About page content.", 500));
+        }
+    }
+
+    @GetMapping("/about")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getAboutPageContent() {
+        try {
+            AboutPageContentDto contentDto = aboutPageService.getAboutPageContent();
+            return ResponseEntity.ok(new ApiResponse("Retrieved About Page content successfully", 200));
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse("You do not have the necessary permissions to access this resource", 403));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("Failed to retrieve About page content.", 500));
         }
     }
 }
