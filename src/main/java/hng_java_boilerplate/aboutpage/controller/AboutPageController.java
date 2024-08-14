@@ -32,14 +32,12 @@ public class AboutPageController {
 
     @GetMapping("/about")
     public ResponseEntity<?> getAboutPageContent() {
-        try {
-            AboutPageContentDto contentDto = aboutPageService.getAboutPageContent();
-            return ResponseEntity.ok(new ApiResponse("Retrieved About Page content successfully", 200));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("Failed to retrieve About page content.", 500));
+        AboutPageContentDto contentDto = aboutPageService.getAboutPageContent();
+        if (contentDto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse("About page content not found.", 404));
         }
+        return ResponseEntity.ok(new ApiResponse("Retrieved About Page content successfully", 200));
     }
 
     @DeleteMapping("/about")

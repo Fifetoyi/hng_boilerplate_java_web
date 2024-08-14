@@ -43,8 +43,8 @@ public class AboutPageService {
     }
 
     @Transactional(readOnly = true)
-    public AboutPageContentDto getAboutPageContent() throws AccessDeniedException {
-        AboutPageContent content = aboutPageRepository.findById(1L).orElseThrow(() -> new AccessDeniedException("Access denied"));
+    public AboutPageContentDto getAboutPageContent() {
+        AboutPageContent content = aboutPageRepository.findById(1L).orElse(null);
 
         AboutPageContentDto contentDto = new AboutPageContentDto();
         contentDto.setTitle(content.getTitle());

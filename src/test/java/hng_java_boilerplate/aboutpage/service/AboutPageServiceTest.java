@@ -1,4 +1,4 @@
-package hng_java_boilerplate.aboutpage;
+package hng_java_boilerplate.aboutpage.service;
 
 import hng_java_boilerplate.aboutpage.dto.AboutPageContentDto;
 import hng_java_boilerplate.aboutpage.entity.AboutPageContent;
@@ -75,4 +75,58 @@ public class AboutPageServiceTest {
         assertEquals("Trained to Give You The Best", savedContent.getServicesTitle());
         assertEquals("Since our founding, Hng Boilerplate has been dedicated to constantly evolving to stay ahead of the curve.", savedContent.getServicesDescription());
     }
+
+    @Test
+    public void testGetAboutPageContent() {
+        // Prepare the mock entity
+        AboutPageContent content = new AboutPageContent();
+        content.setTitle("More Than Just A BoilerPlate");
+        content.setIntroduction("Welcome to Hng Boilerplate, where passion meets innovation.");
+        content.setYearsInBusiness(10);
+        content.setCustomers(75000);
+        content.setMonthlyBlogReaders(100000);
+        content.setSocialFollowers(1200000);
+        content.setServicesTitle("Trained to Give You The Best");
+        content.setServicesDescription("Since our founding, Hng Boilerplate has been dedicated to constantly evolving to stay ahead of the curve.");
+
+        // Mock repository response
+        when(aboutPageRepository.findById(any(Long.class))).thenReturn(java.util.Optional.of(content));
+
+        // Call the service method
+        AboutPageContentDto result = aboutPageService.getAboutPageContent();
+
+        // Verify the result
+        assertEquals("More Than Just A BoilerPlate", result.getTitle());
+        assertEquals("Welcome to Hng Boilerplate, where passion meets innovation.", result.getIntroduction());
+
+        // Verify the custom sections
+        Map<String, Object> stats = (Map<String, Object>) result.getCustomSections().get("stats");
+        assertEquals(10, stats.get("years_in_business"));
+        assertEquals(75000, stats.get("customers"));
+        assertEquals(100000, stats.get("monthly_blog_readers"));
+        assertEquals(1200000, stats.get("social_followers"));
+
+        Map<String, Object> services = (Map<String, Object>) result.getCustomSections().get("services");
+        assertEquals("Trained to Give You The Best", services.get("title"));
+        assertEquals("Since our founding, Hng Boilerplate has been dedicated to constantly evolving to stay ahead of the curve.", services.get("description"));
+    }
+
+
+    @Test
+    public void testDeleteAboutPageContent() {
+        // Prepare the mock entity
+        AboutPageContent content = new AboutPageContent();
+        content.setId(1L);
+
+        // Mock repository response
+        when(aboutPageRepository.findById(1L)).thenReturn(java.util.Optional.of(content));
+
+        // Call the service method
+        aboutPageService.deleteAboutPageContent();
+
+        // Verify interactions with the repository
+        verify(aboutPageRepository).delete(content);
+    }
+
+
 }
