@@ -45,4 +45,20 @@ public class AboutPageController {
                     .body(new ApiResponse("Failed to retrieve About page content.", 500));
         }
     }
+
+    @DeleteMapping("/about")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteAboutPageContent() {
+        try {
+            aboutPageService.deleteAboutPageContent();
+            return ResponseEntity.ok(new ApiResponse("About page content deleted successfully.", 200));
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse("You do not have the necessary permissions to access this resource", 403));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("Failed to delete About page content.", 500));
+        }
+    }
 }

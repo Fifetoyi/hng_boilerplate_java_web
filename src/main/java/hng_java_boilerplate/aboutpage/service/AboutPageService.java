@@ -69,4 +69,11 @@ public class AboutPageService {
 
         return contentDto;
     }
+
+    @Transactional
+    public void deleteAboutPageContent() {
+        AboutPageContent content = aboutPageRepository.findById(1L)
+                .orElseThrow(() -> new AccessDeniedException("Access denied"));
+        aboutPageRepository.delete(content);
+    }
 }
